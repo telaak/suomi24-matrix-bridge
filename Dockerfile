@@ -14,4 +14,4 @@ RUN npm i
 
 EXPOSE 9000
 
-CMD node ./dist/index.js -p 9000
+CMD node ./dist/index.js
