@@ -32,7 +32,8 @@ const getJson = async (key: string) => {
   return result;
 };
 let bridge: Bridge;
-const roomId = process.env.MATRIX_ROOM || "!hoyDciBnqRcijNEuzw:matrix.laaksonen.eu";
+const roomId =
+  process.env.MATRIX_ROOM || "!hoyDciBnqRcijNEuzw:matrix.laaksonen.eu";
 const myUser = process.env.MY_USER || "@teemu:matrix.laaksonen.eu";
 const s24User = process.env.S24_USER || "suomuurahainen";
 const s24Room = Number(process.env.S24_ROOM) || 953;
@@ -265,7 +266,7 @@ const client = new Cli({
 
           switch (event.type) {
             case "m.room.message": {
-              console.log(event.type)
+              console.log(event.type);
               roomMessageHandler(event);
               break;
             }
@@ -281,8 +282,7 @@ const client = new Cli({
         },
       },
     });
-    console.log("Matrix-side listening on port %s", port);
-    bridge.run(port as number);
+    bridge.run(Number(process.env.PORT) || 9000);
   },
 });
 
