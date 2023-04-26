@@ -47,10 +47,11 @@ const ws = new ReconnectingWebSocket(
   }
 );
 
-const s24IntentSet = new Set<Intent>();
+const s24IntentSet = new Set<string>();
 
 setInterval(() => {
-  s24IntentSet.forEach((intent) => {
+  s24IntentSet.forEach((intentString) => {
+    const intent = bridge.getIntent(intentString)
     intent.setPresence("online");
   });
 }, 1000 * 20);
@@ -102,7 +103,7 @@ const handleMessageEvent = async (message: S24EmittedMessage) => {
       const checkRoom = await intent.resolveRoom(sender.dmRoom);
       await putJson(checkRoom, sender);
       await intent.sendText(checkRoom, message.message);
-      s24IntentSet.add(intent);
+      s24IntentSet.add(sender.intent);
       await intent.setPresence("online");
       // await intent.invite(checkRoom, myUser);
     } catch (error) {
@@ -114,7 +115,7 @@ const handleMessageEvent = async (message: S24EmittedMessage) => {
         createAsClient: true,
       });
       await intent.sendText(dmRoom.room_id, message.message);
-      s24IntentSet.add(intent);
+      s24IntentSet.add(sender.intent);
       await intent.setPresence("online");
       await intent.createAlias(sender.dmRoom, dmRoom.room_id);
       await putJson(dmRoom.room_id, sender);
@@ -125,11 +126,11 @@ const handleMessageEvent = async (message: S24EmittedMessage) => {
       roomId,
       `${getHighlightLink(target)} ${message.message}`
     );
-    s24IntentSet.add(intent);
+    s24IntentSet.add(sender.intent);
     await intent.setPresence("online");
   } else {
     await intent.sendText(roomId, message.message);
-    s24IntentSet.add(intent);
+    s24IntentSet.add(sender.intent);
     await intent.setPresence("online");
   }
 };
@@ -137,14 +138,14 @@ const handleMessageEvent = async (message: S24EmittedMessage) => {
 const handleUserLogin = async (login: S24EmittedLogin) => {
   const s24User = getS24User(login.username);
   const intent = bridge.getIntent(s24User.intent);
-  s24IntentSet.add(intent);
+  s24IntentSet.add(s24User.intent);
   await intent.setPresence("online");
 };
 
 const handleUserLogout = async (logout: S24EmittedLogout) => {
   const s24User = getS24User(logout.username);
   const intent = bridge.getIntent(s24User.intent);
-  s24IntentSet.delete(intent);
+  s24IntentSet.delete(s24User.intent);
   await intent.setPresence("offline");
 };
 
@@ -152,10 +153,10 @@ const handleUserStateChange = async (stateChange: S24EmittedStateChange) => {
   const s24User = getS24User(stateChange.username);
   const intent = bridge.getIntent(s24User.intent);
   if (stateChange.state === "0") {
-    s24IntentSet.add(intent);
+    s24IntentSet.add(s24User.intent);
     await intent.setPresence("online");
   } else if (stateChange.state === "1") {
-    s24IntentSet.delete(intent);
+    s24IntentSet.delete(s24User.intent);
     await intent.setPresence("unavailable", "Idle");
   }
 };
