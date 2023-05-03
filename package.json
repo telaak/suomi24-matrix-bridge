@@ -8,6 +8,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@types/nedb": "^1.8.13",
     "@types/ws": "^8.5.4"
   }
 }

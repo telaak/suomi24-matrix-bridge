@@ -19,17 +19,20 @@ export type S24EmittedMessage = {
 export type S24EmittedLogout = {
   username: string;
   timestamp: Date | string;
+  roomId: number | string;
 };
 
 export type S24EmittedLogin = {
   username: string;
   timestamp: Date | string;
+  roomId: number | string;
 };
 
 export type S24EmittedStateChange = {
   username: string;
   state: number | string;
   timestamp: Date | string;
+  roomId: number | string;
 };
 
 export type S24User = {
